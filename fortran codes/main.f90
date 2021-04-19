@@ -4,15 +4,19 @@
 ! FIRST EXERCISE
 ! to compile code: gfortran -o result fourier.f90 parameters.f90
 
-program fourierseries
-    use parameters
+program main
+    use fgsl
+    use functions
+    use fourierseries
+    use newtoncotes
+    
     implicit none
 
     ! Defining a name for Fourier Analysis Exercise
-    character(len=charlen) :: file_name = "result.txt"
-    integer(sp) :: iter=1,nmax=100,new_unit
-    real(dp) :: dxvec,x0=-6.0_wp,x1=6.0_wp
-    real(dp), allocatable :: xvec(:), yvec(:)
+    character(kind=fgsl_char,len=*) :: file_name = "result.txt"
+    integer(fgsl_int) :: iter=1,nmax=100,new_unit
+    real(fgsl_double) :: dxvec,x0=-6.0_fgsl_double,x1=6.0_fgsl_double, itrap, ertrp, itsim, ersim
+    real(fgsl_double), allocatable :: xvec(:), yvec(:)
     
     open(newunit=new_unit,file=file_name,status="replace",action="write")
     allocate(xvec(nmax))
@@ -37,6 +41,13 @@ program fourierseries
         end if
         print "(f11.8,a3,f11.8)",xvec(iter)," ",yvec(iter)
     end do
+    
+    ! Integrating piecewise function and calculating error of each numerical-integration method
+    print "(a19)", " "
+    call trapzrep(x,y,h,n,itrap,ertrp)
+    call simpson3rep(x,y,h,n,itsim,ersim)
+    print "(a20,f15.22,a15,f15.22)", "Trapezoidal's rule: ",itrap,"maximum error: ",ertrp
+    print "(a20,f15.22,a15,f15.22)", "Simpson's rule: ",itsim,"maximum error: ",ersim
 
     write(new_unit,"(f11.8,a6,f11.8)") (xvec(iter)," ",yvec(iter),iter=1,nmax)
     
@@ -44,24 +55,4 @@ program fourierseries
     deallocate(yvec)
 
     ! call execute_command_line() %% preparing a command-line for gnuplot
-end program fourierseries
-
-! Exercise 18 from page 556
-! Calling a subroutine to calculate piecewise function
-subroutine piecewise_18pg556(x,y,k,n)
-    use parameters
-    integer(sp) :: i, k
-    real(dp), intent(in) :: x
-    real(dp), intent(out) :: y(n)
-
-    do i = 1, n
-        if (x >= real(-2.0_wp + 4.0_wp*k) .and. x <= real(-1.0_wp + 4.0_wp*k)) then
-            y(i) = 0.0
-        else if (x > real(-1.0_wp + 4.0_wp*k) .and. x < real(1.0_wp + 4.0_wp*k)) then
-            y(i) = x
-        else if (x >= real(1.0_wp + 4.0_wp*k) .and. x < real(2.0_wp + 4.0_wp*k)) then
-            y(i) = 0.0
-        end if
-    end do
-
-end subroutine
+end program main
