@@ -24,7 +24,7 @@ module newtoncotes
                 d2ydx2 = diff
             end if
         end do
-        itrep = 0.5*h*dxit
+        itrep = h*dxit/2.0_fgsl_double
         etrep = -n*h**(3)*d2ydx2/1.2e1 
 
     end subroutine trapzrep
@@ -40,9 +40,9 @@ module newtoncotes
         do i = 1, n 
             if (i == 1 .or. i == n) then 
                 dxis = dxis + y(i)
-            else if (i > 1 .and. i < n .and. mod(i,2) == 1) then ! For odd positions
+            else if (mod(i,2) == 1) then ! For odd positions
                 dxis = dxis + 4*y(i)
-            else if (i > 1 .and. i < n .and. mod(i,2) == 0) then ! For even positions
+            else                         ! For even positions
                 dxis = dxis + 2*y(i)
             end if
             diff = abs((y(i)-4*y(i+1)+6*y(i+2)-4*y(i+3)+y(i+4))/h**(4)) ! Forward-finite difference for 4nd-order derivative
@@ -50,7 +50,7 @@ module newtoncotes
                 d4ydx4 = diff
             end if
         end do
-        isrep = h*dxis/3.0e0
+        isrep = h*dxis/3.0_fgsl_double
         esrep = -n*h**(5)*d4ydx4/1.8e2 
     end subroutine simpson3rep
 
