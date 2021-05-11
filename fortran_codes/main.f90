@@ -3,8 +3,9 @@
 ! PROFESSOR MARCIO VIOLANTE FERREIRA
 ! EXERCISE 18 FROM PAGE 556 - BOYCE & DIPRIMA'S BOOK
 ! COMPILING CODE: 
-! gfortran -march=native -mtune=native -O3 -I/usr/local/include/fgsl -lgsl -lopenblas &
-! & -lm main.f90 functions.f90 fourierseries.f90
+! Created a makefile to optimize compiling process
+! Enter in Terminal and write:
+! make ; ./ex18.exe argument1 ==> argument1 = number of repetitions for this exercise
 
 program main
     use fgsl
@@ -15,12 +16,16 @@ program main
 
     ! Defining a name for Fourier Analysis Exercise
     character(kind=fgsl_char,len=6) :: file_name = "result"
-    character(kind=fgsl_char,len=6) :: unit1	
-    integer(fgsl_int) :: iter=1,nmax=1000,mmax=5000,new_unit,period
+    character(kind=fgsl_char,len=6) :: unit1,arg1	
+    integer(fgsl_int) :: iter=1,nmax=1000,mmax,new_unit,period
     real(fgsl_double) :: dxvec,x0=-6.0_fgsl_double,x1=6.0_fgsl_double
     real(fgsl_double), allocatable :: xvec(:), yvec(:), fft_res(:)
     
-    write(unit1,'(I6.6)') mmax
+    ! Command-line input of how many iterations has to be done in Fourier's Series
+    call get_command_argument(1,arg1)
+    read(arg1,*) mmax ! Transforming string into an integer
+
+    write(unit1,'(I6.6)') mmax ! Creating a new string with 6 digits to store results
     open(newunit=new_unit,file=file_name//"_"//trim(unit1)//".txt",status="replace",action="write")
     
     allocate(xvec(nmax))
@@ -52,5 +57,6 @@ program main
     deallocate(fft_res)
 
     ! Plotting chart with interface between Gnuplot and Fortran
-    call execute_command_line("gnuplot -c plot.plt "//file_name//"_"//trim(unit1)//".txt "//trim(unit1)) ! preparing a command-line for gnuplot
+    call execute_command_line("gnuplot -c plot.plt " &
+    & //file_name//"_"//trim(unit1)//".txt "//arg1) ! preparing a command-line for gnuplot
 end program main
