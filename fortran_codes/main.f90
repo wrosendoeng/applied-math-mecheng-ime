@@ -18,7 +18,7 @@ program main
     character(kind=fgsl_char,len=6) :: file_name = "result"
     character(kind=fgsl_char,len=6) :: unit1,arg1	
     integer(fgsl_int) :: iter=1,nmax=1000,mmax,new_unit,period
-    real(fgsl_double) :: dxvec,x0=-6.0_fgsl_double,x1=6.0_fgsl_double
+    real(fgsl_double) :: dxvec,x0=0.0_fgsl_double,x1=6.0_fgsl_double
     real(fgsl_double), allocatable :: xvec(:), yvec(:), fft_res(:)
     
     ! Command-line input of how many iterations has to be done in Fourier's Series
